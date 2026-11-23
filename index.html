@@ -280,6 +280,16 @@ html.hubm .grp,html.hubm .mgh{font:700 16px var(--text);font-variant:normal;lett
 .cld-dz{margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
 .cld-dz summary{cursor:pointer;color:var(--red);font-weight:600;font-size:14px}
 .cld-del{border-color:var(--red)!important;color:var(--red)!important}
+.lg-f{text-align:center;font-size:12px;color:var(--mut);margin:-14px 0 24px;line-height:1.6;padding:0 16px}
+.lg-l a,.cld-lg a,.lg-b a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.cld-lg{font-size:12px;margin-top:10px;line-height:1.45}
+.lg-tabs{display:flex;gap:6px;padding:0 16px 10px;border-bottom:1px solid var(--line,rgba(127,127,127,.25))}
+.lg-tabs button{flex:1;padding:8px 4px;border-radius:8px;border:1px solid transparent;background:none;color:var(--mut);font:inherit;font-size:13px;cursor:pointer}
+.lg-tabs button.on{color:inherit;border-color:currentColor;font-weight:700}
+.lg-b{font-size:14px;line-height:1.55;max-height:65vh;overflow:auto}
+.lg-b p{margin:0 0 10px}
+.lg-t{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 12px}
+.lg-t th,.lg-t td{text-align:left;vertical-align:top;padding:6px;border-bottom:1px solid var(--line,rgba(127,127,127,.25))}
 /* Clarissima Luceat */
 #clp{position:fixed;inset:0;z-index:58;background:rgba(10,8,8,.62);display:flex;align-items:flex-end;justify-content:center}
 #clp .pgw>#clb{overflow-y:auto;flex:1 1 auto;min-height:0;padding-bottom:18px;-webkit-overflow-scrolling:touch}
@@ -3881,7 +3891,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.3',APP_D='23/11/2026';
+const APP_V='2.4',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -4058,7 +4068,7 @@ function hub(){
  const card=s=>{const n=s.conta(),U=s.un||['ficha','fichas'];if(s.lock)return `<div class="card sys cover locked" role="button" tabindex="0" aria-disabled="true" data-lock="${s.id}" aria-label="${esc(s.nome)} · bloqueado">${s.img?`<img src="${s.img}" alt="" draggable="false">`:''}<span class="lockb" aria-hidden="true">${LOCKSVG}<b>Bloqueado</b></span></div>`;if(s.img)return `<div class="card sys cover" role="button" tabindex="0" data-sys="${s.id}" aria-label="${esc(s.nome)} · ${n?n+' '+(n>1?U[1]:U[0]):'nenhuma '+U[0]}"><img src="${s.img}" alt="${esc(s.nome)}" draggable="false"></div>`;return `<div class="card sys${s.cls?' '+s.cls:''}" role="button" tabindex="0" data-sys="${s.id}"><div class="crest" aria-hidden="true">${esc(s.sigla)}</div><div><div class="ct">${esc(s.nome)}</div><div class="mut">${esc(s.sub)}</div><div class="sn">${n?n+' '+(n>1?U[1]:U[0]):'Nenhuma '+U[0]+' ainda'}</div></div><span class="go" aria-hidden="true">›</span></div>`};
  const tot=db.length;
  $('#app').innerHTML=`${window.cloudHtml?cloudHtml():''}<div class="hml"><b>Escolha o sistema</b><span>${tot?tot+(tot>1?' fichas':' ficha'):'nenhuma ficha'}</span></div>${SYSTEMS.map(card).join('')}<div class="soon"><i aria-hidden="true">+</i><div><div class="ct">Novos sistemas</div><div class="mut">Em breve</div></div></div>${bkBanner()}<div class="row" style="margin:18px 2px 6px"><button class="btn" id="bkp">Backup de todas as fichas</button></div><div class="row" style="margin:0 2px 6px"><button class="btn" data-xfer="1">Passar fichas entre aparelhos</button></div>`;
- $('#app').insertAdjacentHTML('beforeend',bkFoot());
+ $('#app').insertAdjacentHTML('beforeend',bkFoot()+(window.legalFoot?legalFoot():''));
  window.scrollTo(0,0);
 }
 const goHub=()=>trans(hub,-1);
@@ -4110,7 +4120,7 @@ const hubRefresh=()=>{if(typeof SYS!=='undefined'&&SYS===null&&document.getEleme
 const set=s=>{ST=s;paint()};
 const G='<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
 window.cloudHtml=()=>{if(!ON())return '';
- if(!U)return `<div class="cld" id="cld" data-st="out${ST==='load'?'l':''}"><div class="cld-t"><b>Suas fichas em qualquer aparelho</b><span class="mut">Entre com o Google para guardar as fichas na nuvem. Sem login, elas ficam só neste aparelho.</span></div><button type="button" class="cld-g" data-cld="in"${ST==='load'?' disabled':''}>${G}<span>${ST==='load'?'Conectando…':'Entrar com Google'}</span></button>${err?`<div class="cld-e">${esc(err)}</div>`:''}</div>`;
+ if(!U)return `<div class="cld" id="cld" data-st="out${ST==='load'?'l':''}"><div class="cld-t"><b>Suas fichas em qualquer aparelho</b><span class="mut">Entre com o Google para guardar as fichas na nuvem. Sem login, elas ficam só neste aparelho.</span></div><button type="button" class="cld-g" data-cld="in"${ST==='load'?' disabled':''}>${G}<span>${ST==='load'?'Conectando…':'Entrar com Google'}</span></button>${err?`<div class="cld-e">${esc(err)}</div>`:''}<div class="cld-lg mut">Ao entrar, você aceita os <a href="#" data-lg="termos">Termos de uso</a> e a <a href="#" data-lg="priv">Política de Privacidade</a>.</div></div>`;
  const ini=(U.name||U.email||'?').trim().charAt(0).toUpperCase();
  return `<div class="cld in" id="cld" data-st="in"><button type="button" class="cld-me" data-cld="menu" aria-label="Conta: ${esc(U.name||U.email)}">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(ini)}</span>`}</button><div class="cld-t"><b>${esc(U.name||U.email)}</b><span class="cld-s ${ST}" id="cldst">${esc(stTxt())}</span></div><button type="button" class="btn" data-cld="menu">Conta</button></div>`};
 // ---------- sincronização ----------
@@ -4177,7 +4187,7 @@ function modal(title,body,on){const m=document.createElement('div');m.className=
  const close=()=>{m.remove();document.body.style.overflow=''};
  m.addEventListener('click',async e=>{if(e.target===m){close();return}const b=e.target.closest('[data-cw]');if(!b)return;if(b.dataset.cw==='x'){close();return}await on(b.dataset.cw,b,close,m)});return m}
 function menu(){if(!U)return;
- const body=()=>`<div class="cld-acc">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:''}<div><b>${esc(U.name||'')}</b><span class="mut">${esc(U.email||'')}</span></div></div><p class="mut" style="margin:10px 0 14px">${esc(stTxt())}. As fichas também continuam salvas neste aparelho.</p><button type="button" class="btn" data-cw="sync" style="width:100%">Sincronizar agora</button><button type="button" class="btn" data-cw="out" style="width:100%;margin-top:8px">Sair da conta</button><details class="cld-dz"><summary>Apagar minha conta e meus dados</summary><p class="mut">Apaga da nuvem todas as fichas e campanhas desta conta e exclui o login. As fichas deste aparelho não são apagadas. Não dá para desfazer.</p><button type="button" class="btn cld-del" data-cw="del" style="width:100%">Apagar conta e dados da nuvem</button></details>`;
+ const body=()=>`<div class="cld-acc">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:''}<div><b>${esc(U.name||'')}</b><span class="mut">${esc(U.email||'')}</span></div></div><p class="mut" style="margin:10px 0 14px">${esc(stTxt())}. As fichas também continuam salvas neste aparelho.</p><button type="button" class="btn" data-cw="sync" style="width:100%">Sincronizar agora</button><button type="button" class="btn" data-cw="out" style="width:100%;margin-top:8px">Sair da conta</button><p class="mut" style="margin:12px 0 0;text-align:center">${window.legalLinks?legalLinks():''}</p><details class="cld-dz"><summary>Apagar minha conta e meus dados</summary><p class="mut">Apaga da nuvem todas as fichas e campanhas desta conta e exclui o login. As fichas deste aparelho não são apagadas. Não dá para desfazer.</p><button type="button" class="btn cld-del" data-cw="del" style="width:100%">Apagar conta e dados da nuvem</button></details>`;
  modal('Sua conta',body(),async(a,b,close)=>{
   if(a==='sync'){S.q=Array.from(new Set(S.q.concat(db.map(c=>c.id))));db.forEach(c=>{S.mt[c.id]=S.mt[c.id]||now()});sv();close();flushSoon(0);toast('Sincronizando…')}
   else if(a==='out'){close();try{(await fb()).signOut()}catch(e){}toast('Você saiu da conta. As fichas continuam neste aparelho.')}
@@ -4197,6 +4207,55 @@ if(ON()){
 window.FCCLOUD={state:()=>({U,ST,S,first}),scan,flush};
 })();
 // ===== CONTA E NUVEM (fim) =====
+// ===== PRIVACIDADE, TERMOS E SOBRE (LGPD) =====
+(()=>{
+const LG_NOME='Leonardo Müller',LG_MAIL='leonardomullerdomingos16@gmail.com',LG_DATA='23/11/2026';
+const only=()=>Array.isArray(window.FC_ONLY)?window.FC_ONLY:null;
+const M=`<a href="mailto:${LG_MAIL}">${LG_MAIL}</a>`;
+const P=(t,b)=>`<p><b>${t}</b> ${b}</p>`;
+const T={
+priv:()=>`<p class="mut">Atualizada em ${LG_DATA}</p>
+<p>O Falha Crítica guarda só o necessário para salvar suas fichas na sua conta e não vende nem compartilha seus dados.</p>
+${P('Quem é o responsável.',`O Falha Crítica é um projeto pessoal e gratuito mantido por ${LG_NOME}, que responde pelos dados tratados aqui. Contato: ${M}.`)}
+<p><b>Quais dados guardamos</b></p>
+<table class="lg-t"><tr><th>Dado</th><th>Para que serve</th></tr>
+<tr><td>Nome, e-mail e foto da conta Google</td><td>Identificar sua conta e mostrar quem está conectado</td></tr>
+<tr><td>Fichas, campanhas, anotações e preferências</td><td>Salvar e sincronizar entre seus aparelhos</td></tr>
+<tr><td>Identificador técnico da conta</td><td>Ligar seus dados à sua conta</td></tr></table>
+<p>Não pedimos CPF, telefone, endereço nem dados de pagamento. Não usamos anúncios, cookies de rastreamento nem ferramentas de análise.</p>
+${P('Sem login.','Tudo fica só no seu aparelho (no armazenamento do navegador) e nada é enviado para a nuvem.')}
+${P('Onde ficam.','Os dados da conta ficam no Firebase, serviço do Google, com acesso restrito: cada conta só lê e altera os próprios dados. Imagens, vídeos e documentos que o mestre envia na mesa online passam direto entre os aparelhos da mesa e não ficam guardados na nuvem.')}
+${P('Com quem compartilhamos.','Com ninguém, exceto: o Google, que opera o login, o armazenamento e as fontes de texto do app; e os participantes de uma campanha em que você entrar, que veem a ficha que você vincular a ela.')}
+${P('Base legal.','Tratamos os dados para executar o serviço que você pediu ao criar a conta (LGPD, art. 7º, V).')}
+${P('Seus direitos.',`Pela LGPD, você pode a qualquer momento confirmar quais dados temos, corrigi-los, exportá-los e apagá-los. No app, “Backup de todas as fichas” baixa suas fichas, e em Conta → “Apagar minha conta e meus dados” tudo é removido da nuvem na hora. Para qualquer outro pedido, escreva para ${M}; respondemos em até 15 dias.`)}
+${P('Quanto tempo guardamos.','Enquanto a conta existir. Ao apagar a conta, os dados saem da nuvem imediatamente; cópias de segurança do Google expiram em até 30 dias.')}
+${P('Menores de idade.','Menores de 18 anos devem usar o app com o conhecimento de um responsável.')}
+${P('Mudanças.','Se esta política mudar, a data no topo será atualizada e avisaremos no app.')}`,
+termos:()=>`<p class="mut">Atualizados em ${LG_DATA}</p>
+<p>Ao usar o Falha Crítica, você concorda com estes termos. Se não concordar, não use o app.</p>
+${P('O que é.','Uma ferramenta gratuita de fichas e campanhas de RPG feita por fãs, para uso pessoal e em mesas de jogo. Não substitui os livros oficiais.')}
+${P('Sua conta.','Você entra com sua conta Google e responde pelo que acontece nela. Não compartilhe o acesso.')}
+${P('Seu conteúdo.','Fichas, anotações e arquivos que você cria ou envia continuam seus. Você nos autoriza apenas a guardá-los e mostrá-los a você e às pessoas das campanhas em que você entrar.')}
+${P('Conduta.','Não envie pela mesa online conteúdo ilegal, ofensivo, sexual envolvendo menores, ou que viole direitos de terceiros. Não tente acessar dados de outras pessoas nem sobrecarregar o serviço.')}
+${P('Sem garantia.','O app é oferecido como está, sem garantia de funcionamento contínuo. Faça backup das fichas importantes. Não respondemos por perdas de dados nem por decisões tomadas com base nos cálculos do app.')}
+${P('Encerramento.','Você pode apagar sua conta quando quiser. Podemos suspender contas que violem estes termos e podemos encerrar o serviço, avisando com pelo menos 30 dias para você exportar seus dados.')}
+${P('Mudanças.','Se estes termos mudarem, a data no topo será atualizada e avisaremos no app.')}
+${P('Lei aplicável.',`Vale a lei brasileira. Contato: ${M}.`)}`,
+sobre:()=>{const o=only(),t20=!o||o.includes('t20'),cl=!o||o.includes('cl'),ru=!o||o.includes('rup');
+ const own=[t20?'Tormenta, Tormenta20 e seus nomes, regras e textos pertencem à Jambô Editora e aos seus autores.':'',(cl||ru)?[cl?'Clarissima Luceat':'',ru?'A Ruptura':''].filter(Boolean).join(' e ')+' pertence'+(cl&&ru?'m':'')+' aos seus criadores e '+(cl&&ru?'são usados':'é usado')+' com permissão.':''].filter(Boolean).join(' ');
+ return `<p>O Falha Crítica é uma ferramenta gratuita de fichas e campanhas de RPG, feita por fãs${t20?', sem vínculo, patrocínio ou aprovação da Jambô Editora':''}.</p><p>${own} Para jogar, compre os livros oficiais e apoie quem cria.</p><p>Titulares de direitos podem pedir a remoção de qualquer conteúdo pelo e-mail ${M}; atendemos em até 48 horas.</p><p class="mut">Feito por ${LG_NOME}. Versão ${typeof APP_V!=='undefined'?APP_V:''}.</p>`}
+};
+const NM={priv:'Privacidade',termos:'Termos de uso',sobre:'Sobre'};
+window.legalOpen=k=>{k=T[k]?k:'priv';const old=document.getElementById('lgw');if(old)old.remove();
+ const m=document.createElement('div');m.className='gmw';m.id='lgw';
+ const draw=k=>`<div class="pgw lg" role="dialog" aria-modal="true" aria-label="${NM[k]}"><div class="pgh"><b>${NM[k]}</b><button type="button" data-lgx aria-label="Fechar">✕</button></div><div class="lg-tabs" role="tablist">${Object.keys(NM).map(x=>`<button type="button" role="tab" aria-selected="${x===k}" class="${x===k?'on':''}" data-lgt="${x}">${NM[x]}</button>`).join('')}</div><div class="gmb lg-b">${T[k]()}</div></div>`;
+ m.innerHTML=draw(k);document.body.append(m);document.body.style.overflow='hidden';
+ m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-lgx]')){m.remove();document.body.style.overflow='';return}const t=e.target.closest('[data-lgt]');if(t){m.innerHTML=draw(t.dataset.lgt)}})};
+window.legalLinks=()=>`<span class="lg-l"><a href="#" data-lg="priv">Privacidade</a> · <a href="#" data-lg="termos">Termos</a> · <a href="#" data-lg="sobre">Sobre</a></span>`;
+window.legalFoot=()=>{const o=only();return `<div class="lg-f">${(!o||o.includes('t20'))?'Ferramenta de fãs, não oficial. Tormenta20 é marca da Jambô Editora.<br>':''}${legalLinks()}</div>`};
+document.addEventListener('click',e=>{const a=e.target&&e.target.closest?e.target.closest('[data-lg]'):null;if(!a)return;e.preventDefault();legalOpen(a.dataset.lg)});
+})();
+// ===== PRIVACIDADE, TERMOS E SOBRE (fim) =====
 // ===== CLARISSIMA LUCEAT (início) =====
 ;(function(){
 // (módulo em função própria: os nomes cl* não colidem com os do Tormenta20, que também usa cl* para o Clérigo)

@@ -315,6 +315,7 @@ html.hubm .top h1::before{width:58px!important;height:58px!important;margin:-12p
 .sc-i>span{display:flex;flex-direction:column;min-width:0}
 .sc-i .mut{font-size:13px}
 .sc-i.dup{opacity:.55}
+.sc-tip{font-size:14px;line-height:1.5;padding:10px 12px;border-radius:12px;background:rgba(79,209,197,.12);margin:8px 0 4px}
 /* Clarissima Luceat */
 #clp{position:fixed;inset:0;z-index:58;background:rgba(10,8,8,.62);display:flex;align-items:flex-end;justify-content:center}
 #clp .pgw>#clb{overflow-y:auto;flex:1 1 auto;min-height:0;padding-bottom:18px;-webkit-overflow-scrolling:touch}
@@ -3916,7 +3917,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.10',APP_D='23/11/2026';
+const APP_V='2.11',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -4241,6 +4242,7 @@ try{document.documentElement.style.setProperty('--fclogo','url('+FC_LOGO.s+')')}
 // ===== NOVIDADES (o que mudou em cada versão; o publicar.sh acrescenta a nova no topo) =====
 const NOVID=[
 //NOVID_TOPO
+{v:'2.11',d:'23/11/2026',i:["Procurar fichas no aparelho agora mostra onde os backups ficam: a pasta Downloads, com arquivos falha-critica-ano-mês-dia.json."]},
 {v:'2.10',d:'23/11/2026',i:["Procurar fichas no aparelho: escolha uma pasta ou arquivos e o app encontra os backups de fichas, mostra quais são e você escolhe quais adicionar.", "Só arquivos .json e .txt são lidos, a permissão vale só para aquela busca e nada sai do aparelho."]},
 {v:'2.9',d:'23/11/2026',i:['Novidades na tela inicial: veja o que mudou nas últimas versões.']},
 {v:'2.8',d:'23/11/2026',i:['Botão “Excluir conta” no menu da conta, com aviso e confirmação.']},
@@ -4298,10 +4300,10 @@ function pickInput(dir){const i=document.createElement('input');i.type='file';i.
  i.addEventListener('change',()=>{const L=[...(i.files||[])];i.remove();if(!L.length)return;reset(false);fromList(L)});i.click()}
 function reset(all){S.files=0;S.read=0;S.found=[];S.skip=0;S.sel={};if(all)S.st='idle'}
 function body(){
- if(S.st==='idle')return `<p>O Falha Crítica procura <b>arquivos de backup de fichas</b> (.json ou .txt) no lugar que você escolher, como a pasta <b>Downloads</b>.</p>
+ if(S.st==='idle')return `<p>O Falha Crítica procura <b>arquivos de backup de fichas</b> (.json ou .txt) no lugar que você escolher.</p><div class="sc-tip"><b>Onde procurar:</b> na pasta <b>Downloads</b> (no Android pode aparecer como <b>Download</b>; no iPhone, em Arquivos › Downloads). É lá que o botão “Salvar arquivo de backup” sempre guardou os backups, com nome <b>falha-critica-ano-mês-dia.json</b>.</div>
   <ul class="sc-ok"><li>Você escolhe a pasta ou os arquivos, e a permissão vale só para esta busca.</li><li>Só são lidos arquivos .json e .txt pequenos. Fotos, vídeos e outros arquivos são ignorados.</li><li>Nada é enviado para fora do aparelho: você escolhe quais fichas entram no app.</li></ul>
   <div class="bkbt">${canDir()?`<button type="button" class="go" data-sc="dir">Escolher uma pasta</button>`:canWkd()?`<button type="button" class="go" data-sc="wkd">Escolher uma pasta</button>`:''}<button type="button" class="${canDir()||canWkd()?'':'go'}" data-sc="files">${canDir()||canWkd()?'Escolher arquivos':'Escolher arquivos (selecione vários)'}</button></div>
-  ${canDir()||canWkd()?'':'<p class="mut">No celular, abra a pasta Downloads no seletor e marque os arquivos de backup (geralmente “falha-critica-….json”). Pode marcar vários de uma vez.</p>'}`;
+  ${canDir()||canWkd()?'':'<p class="mut">No seletor, abra a pasta Downloads e marque os arquivos falha-critica-….json. Pode marcar vários de uma vez.</p>'}`;
  if(S.st==='busy')return `<div class="sc-busy" role="status"><b>Procurando fichas…</b><span class="mut">${S.files} arquivo${S.files===1?'':'s'} vistos · ${S.found.length} ficha${S.found.length===1?'':'s'} encontrada${S.found.length===1?'':'s'}</span></div>`;
  if(!S.found.length)return `<p><b>Nenhuma ficha encontrada.</b></p><p class="mut">Olhei ${S.files} arquivo${S.files===1?'':'s'}. Confira se escolheu a pasta onde o backup foi salvo (no app antigo: Backup de todas as fichas › Salvar arquivo de backup).</p><div class="bkbt"><button type="button" data-sc="again">Procurar de novo</button></div>`;
  const n=Object.keys(S.sel).length;

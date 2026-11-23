@@ -3994,7 +3994,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.12',APP_D='23/11/2026';
+const APP_V='3.0',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -4319,7 +4319,7 @@ try{document.documentElement.style.setProperty('--fclogo','url('+FC_LOGO.s+')')}
 // ===== NOVIDADES (o que mudou em cada versão; o publicar.sh acrescenta a nova no topo) =====
 const NOVID=[
 //NOVID_TOPO
-{v:'2.12',d:'23/11/2026',i:["Novos complementos: Heróis de Arton e Ameaças de Arton (escolha ao abrir Tormenta20).", "Raças, origens, poderes, classe Treinador e classes variantes de Heróis de Arton.", "Novos itens, encantos, itens mágicos e magias dos dois livros.", "Distinções: 36 caminhos especiais na aba Habilidades.", "Mestre: aba Bestiário com 498 criaturas, ficha, rolagem de ataques e iniciativa.", "Deslize o dedo para os lados para trocar de aba."]},
+{v:'3.0',d:'23/11/2026',i:["Novos complementos: Heróis de Arton e Ameaças de Arton (escolha ao abrir Tormenta20).", "Raças, origens, poderes, classe Treinador e classes variantes de Heróis de Arton.", "Novos itens, encantos, itens mágicos e magias dos dois livros.", "Distinções: 36 caminhos especiais na aba Habilidades.", "Mestre: aba Bestiário com 498 criaturas, ficha, rolagem de ataques e iniciativa.", "Deslize o dedo para os lados para trocar de aba."]},
 {v:'2.11',d:'23/11/2026',i:["Procurar fichas no aparelho agora mostra onde os backups ficam: a pasta Downloads, com arquivos falha-critica-ano-mês-dia.json."]},
 {v:'2.10',d:'23/11/2026',i:["Procurar fichas no aparelho: escolha uma pasta ou arquivos e o app encontra os backups de fichas, mostra quais são e você escolhe quais adicionar.", "Só arquivos .json e .txt são lidos, a permissão vale só para aquela busca e nada sai do aparelho."]},
 {v:'2.9',d:'23/11/2026',i:['Novidades na tela inicial: veja o que mudou nas últimas versões.']},

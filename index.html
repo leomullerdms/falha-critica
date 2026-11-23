@@ -3891,7 +3891,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.4',APP_D='23/11/2026';
+const APP_V='2.5',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -5646,7 +5646,7 @@ document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.
 // ---------- imagens e documentos do mestre para os jogadores ----------
 // o arquivo vai em pedaços pequenos pela mesma sala criptografada (cabe nos limites dos servidores públicos); não fica guardado nos servidores
 const MDICO='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>';
-const MD_CH=48000,MD_MAX=15*1024*1024,MD_PX=2560,MD_KEEP=150*1048576;
+const MD_CH=48000,MD_MAX=30*1024*1024,MD_PX=2560,MD_KEEP=150*1048576;
 const MD_DEV=(()=>{try{let d=localStorage.getItem('fc_dev');if(!d){d=uid();localStorage.setItem('fc_dev',d)}return d}catch(e){return 'x'+Math.random()}})();
 const mdSz=n=>n<1024?n+' B':n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1).replace('.',',')+' MB';
 let MDB=null;
@@ -5677,7 +5677,7 @@ async function mdSend(c,o,to,prog){const room=roomFor(c.code);await room.ready;c
 // pedido de reparo de um jogador: reenvia só os pedaços que faltaram, por todos os servidores
 async function mdRepair(id,need){let e=MDOUT.get(id);if(!e){const x=(await mdAll()).find(y=>y.id===id&&y.dir==='out');if(!x)return;const c=GM.camps.find(cc=>FC.norm(cc.code)===x.k);if(!c)return;const b64=await b64of(x.blob);
   e={b64,n:Math.max(1,Math.ceil(b64.length/MD_CH)),hd:{id,n:Math.max(1,Math.ceil(b64.length/MD_CH)),ty:x.ty,kind:x.kind,nm:x.nm,cap:x.cap||'',sz:x.blob.size,to:x.to||['*'],fr:MD_DEV,cn:c.nome||''},code:c.code,t:Date.now()};MDOUT.set(id,e)}
- if(e.busy)return;e.busy=true;try{const room=roomFor(e.code);await room.pubX('md/'+id,e.hd,false);const L=(Array.isArray(need)&&need.length?need:[...Array(e.n).keys()]).filter(i=>i>=0&&i<e.n).slice(0,800);
+ if(e.busy)return;e.busy=true;try{const room=roomFor(e.code);await room.pubX('md/'+id,e.hd,false);const L=(Array.isArray(need)&&need.length?need:[...Array(e.n).keys()]).filter(i=>i>=0&&i<e.n).slice(0,1500);
   for(let j=0;j<L.length;j++){const i=L[j];await room.pubX('md/'+id+'/'+i,{d:e.b64.slice(i*MD_CH,(i+1)*MD_CH)},false);for(const cl of room.cl)await mdDrain(cl);if(j%4===3)await mdWait(25)}}finally{e.busy=false}}
 // ---- recepção (aparelho do jogador) ----
 const MDIN=new Map(),MDDONE=new Set(),MDACK={};
@@ -5688,7 +5688,7 @@ function mdProg(){const L=[...MDIN.values()].filter(e=>e.h&&e.me&&e.h.n>2);let e
  const e=L[0],pc=Math.round(e.got/e.h.n*100);el.innerHTML=`<span>Recebendo ${e.h.kind==='img'?'imagem':e.h.kind==='vid'?'vídeo':'documento'} do mestre… ${pc}%</span><i style="width:${pc}%"></i>`}
 function mdWatch(id){const e=MDIN.get(id);if(!e||e.wt)return;e.wt=setInterval(()=>{const x=MDIN.get(id);if(!x){clearInterval(e.wt);return}
  if(Date.now()-x.last<2500||!x.h)return;if(x.tries>=6){clearInterval(e.wt);MDIN.delete(id);mdProg();toast('Não deu para receber o arquivo do mestre. Peça para reenviar.');return}
- x.tries++;x.last=Date.now();const need=[];for(let i=0;i<x.h.n&&need.length<800;i++)if(x.ch[i]===undefined)need.push(i);
+ x.tries++;x.last=Date.now();const need=[];for(let i=0;i<x.h.n&&need.length<1500;i++)if(x.ch[i]===undefined)need.push(i);
  const r=RM.get(x.k);if(r&&need.length)r.room.pubX('mr/'+id,{need},false)},1200)}
 function onX(k,s,o){const q=s.split('/');
  if(q[0]==='ma'&&q[1]&&q[2]){(MDACK[q[1]]||(MDACK[q[1]]=new Set())).add(q[2]);if(popOn('gfw'))mdRecent();return}
@@ -5775,7 +5775,7 @@ let MDF=null,MDTO=['*'],MDCAP='',MDBUSY=false;
 const mdNameOf=(c,pid)=>{const p=c.pl[pid];return (p&&(smOf(p).n||p.jn))||'Jogador'};
 function mdBody(c){const ids=Object.keys(c.pl).sort((a,b)=>mdNameOf(c,a).localeCompare(mdNameOf(c,b),'pt-BR'));const all=MDTO.includes('*');
  const pv=MDF?`<div class="mdpv">${MDF.kind==='img'?`<img alt="" src="${MDF.url}">`:MDF.kind==='vid'?`<span class="mdg-v"><video src="${MDF.url}#t=0.1" muted playsinline preload="metadata"></video><b aria-hidden="true">▶</b></span>`:'<span class="mdg-d" aria-hidden="true">📄</span>'}<div><b>${esc(MDF.nm)}</b><span>${mdSz(MDF.blob.size)}${MDF.kind==='img'?' · imagem':MDF.kind==='vid'?' · vídeo':' · documento'}</span></div><button type="button" class="btn" data-gmp="pick">Trocar</button></div>`
-  :`<button type="button" class="mdpick" data-gmp="pick"><span aria-hidden="true">${MDICO}</span><b>Escolher imagem ou documento</b><small>Foto, vídeo curto, mapa, carta, PDF… (até 15 MB; imagens grandes são ajustadas para 2560 px)</small></button>`;
+  :`<button type="button" class="mdpick" data-gmp="pick"><span aria-hidden="true">${MDICO}</span><b>Escolher imagem ou documento</b><small>Foto, vídeo curto, mapa, carta, PDF… (até ${Math.round(MD_MAX/1048576)} MB; imagens grandes são ajustadas para 2560 px)</small></button>`;
  return `<input type="file" id="mdfi" accept="image/*,video/*,application/pdf,.pdf,.txt" hidden>${pv}
  <label for="mdcap">Legenda (opcional)</label><input id="mdcap" class="gmi" placeholder="Ex.: A carta encontrada no baú" value="${esc(MDCAP)}" autocomplete="off">
  <label>Enviar para</label><div class="gmchs"><button type="button" class="gmch${all?' on':''}" data-gmp="to:*">Todos</button>${ids.map(pid=>`<button type="button" class="gmch${!all&&MDTO.includes(pid)?' on':''}" data-gmp="to:${esc(pid)}">${esc(mdNameOf(c,pid))}${isOn(c.pl[pid])?'':' · fora'}</button>`).join('')}</div>
@@ -5801,7 +5801,7 @@ function mdOpen(){const c=camp();if(!c)return;if(MDF&&MDF.url)URL.revokeObjectUR
   t=>{if(t.id==='mdcap')MDCAP=t.value});
  m.addEventListener('change',async ev=>{const t=ev.target;if(t.id!=='mdfi'||!t.files||!t.files[0])return;const f=t.files[0];
   try{const o=await mdPrep(f);if(MDF&&MDF.url)URL.revokeObjectURL(MDF.url);MDF=Object.assign(o,{url:o.kind!=='doc'?URL.createObjectURL(o.blob):''});re()}
-  catch(e){toast(e&&e.message==='grande'?'Arquivo grande demais: o limite é 15 MB':'Não deu para ler esse arquivo')}});
+  catch(e){toast(e&&e.message==='grande'?'Arquivo grande demais: o limite é '+Math.round(MD_MAX/1048576)+' MB':'Não deu para ler esse arquivo')}});
  mdRecent()}
 // ---------- entrada por link (#c=CODIGO) e início ----------
 try{const m=String(location.hash||'').match(/[#&]c=([A-Za-z0-9]{16})/);if(m){localStorage.setItem(K_PJ,m[1].toUpperCase());history.replaceState(history.state,'',location.pathname+location.search);setTimeout(()=>toast('Código da campanha recebido. Abra a ficha do personagem e toque em “Mesa online”.'),900)}}catch(e){}

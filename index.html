@@ -279,7 +279,8 @@ html.hubm .grp,html.hubm .mgh{font:700 16px var(--text);font-variant:normal;lett
 .cld-acc .mut{font-size:13px}
 .cld-dz{margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
 .cld-dz summary{cursor:pointer;color:var(--red);font-weight:600;font-size:14px}
-.cld-del{border-color:var(--red)!important;color:var(--red)!important}
+.cld-del{border-color:#e0464b!important;color:#e0464b!important}
+.cld-dzt{font-size:14px;margin:0 0 10px;line-height:1.45}
 .lg-f{text-align:center;font-size:12px;color:var(--mut);margin:-14px 0 24px;line-height:1.6;padding:0 16px}
 .lg-l a,.cld-lg a,.lg-b a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .cld-lg{font-size:12px;margin-top:10px;line-height:1.45}
@@ -3893,7 +3894,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.7',APP_D='23/11/2026';
+const APP_V='2.8',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -4189,11 +4190,13 @@ function modal(title,body,on){const m=document.createElement('div');m.className=
  const close=()=>{m.remove();document.body.style.overflow=''};
  m.addEventListener('click',async e=>{if(e.target===m){close();return}const b=e.target.closest('[data-cw]');if(!b)return;if(b.dataset.cw==='x'){close();return}await on(b.dataset.cw,b,close,m)});return m}
 function menu(){if(!U)return;
- const body=()=>`<div class="cld-acc">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:''}<div><b>${esc(U.name||'')}</b><span class="mut">${esc(U.email||'')}</span></div></div><p class="mut" style="margin:10px 0 14px">${esc(stTxt())}. As fichas também continuam salvas neste aparelho.</p><button type="button" class="btn" data-cw="sync" style="width:100%">Sincronizar agora</button><button type="button" class="btn" data-cw="out" style="width:100%;margin-top:8px">Sair da conta</button><p class="mut" style="margin:12px 0 0;text-align:center">${window.legalLinks?legalLinks():''}</p><details class="cld-dz"><summary>Apagar minha conta e meus dados</summary><p class="mut">Apaga da nuvem todas as fichas e campanhas desta conta e exclui o login. As fichas deste aparelho não são apagadas. Não dá para desfazer.</p><button type="button" class="btn cld-del" data-cw="del" style="width:100%">Apagar conta e dados da nuvem</button></details>`;
+ const body=()=>`<div class="cld-acc">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:''}<div><b>${esc(U.name||'')}</b><span class="mut">${esc(U.email||'')}</span></div></div><p class="mut" style="margin:10px 0 14px">${esc(stTxt())}. As fichas também continuam salvas neste aparelho.</p><button type="button" class="btn" data-cw="sync" style="width:100%">Sincronizar agora</button><button type="button" class="btn" data-cw="out" style="width:100%;margin-top:8px">Sair da conta</button><p class="mut" style="margin:12px 0 0;text-align:center">${window.legalLinks?legalLinks():''}</p><div class="cld-dz" id="clddz"><button type="button" class="btn cld-del" data-cw="delask" style="width:100%">Excluir conta</button></div>`;
  modal('Sua conta',body(),async(a,b,close)=>{
   if(a==='sync'){S.q=Array.from(new Set(S.q.concat(db.map(c=>c.id))));db.forEach(c=>{S.mt[c.id]=S.mt[c.id]||now()});sv();close();flushSoon(0);toast('Sincronizando…')}
   else if(a==='out'){close();try{(await fb()).signOut()}catch(e){}toast('Você saiu da conta. As fichas continuam neste aparelho.')}
-  else if(a==='del'){if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Toque de novo para confirmar';return}
+  else if(a==='delask'){const z=document.getElementById('clddz');if(z)z.innerHTML='<p class="cld-dzt"><b>Excluir a conta?</b> Isso apaga da nuvem todas as fichas e campanhas desta conta e exclui o login. As fichas deste aparelho continuam aqui. Não dá para desfazer.</p><button type="button" class="btn cld-del" data-cw="del" style="width:100%">Excluir conta e dados da nuvem</button><button type="button" class="btn" data-cw="delno" style="width:100%;margin-top:8px">Cancelar</button>';return}
+  else if(a==='delno'){const z=document.getElementById('clddz');if(z)z.innerHTML='<button type="button" class="btn cld-del" data-cw="delask" style="width:100%">Excluir conta</button>';return}
+  else if(a==='del'){if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Toque de novo para excluir';return}
    b.disabled=true;b.textContent='Apagando…';try{const api=await fb(),uid=U.uid;clearTimeout(flushT);S.q=[];S.dq=[];if(unsub)try{unsub()}catch(e){}unsub=null;await api.wipe(uid);await api.delUser();S={last:{},mt:{},q:[],dq:[]};sv();close();toast('Conta e dados da nuvem apagados')}catch(e){b.disabled=false;b.dataset.arm='';b.textContent='Apagar conta e dados da nuvem';toast('Não deu para apagar agora. Tente de novo.')}}})}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest?e.target.closest('[data-cld]'):null;if(!b)return;if(b.dataset.cld==='in')signIn();else if(b.dataset.cld==='menu')menu()});
 // ---------- início ----------

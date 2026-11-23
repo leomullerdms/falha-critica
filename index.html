@@ -3994,7 +3994,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='3.0',APP_D='23/11/2026';
+const APP_V='3.1',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -4319,6 +4319,7 @@ try{document.documentElement.style.setProperty('--fclogo','url('+FC_LOGO.s+')')}
 // ===== NOVIDADES (o que mudou em cada versão; o publicar.sh acrescenta a nova no topo) =====
 const NOVID=[
 //NOVID_TOPO
+{v:'3.1',d:'23/11/2026',i:["Trocar de aba deslizando o dedo ficou mais fácil: funciona com gestos mais curtos e também começando em cima dos campos da ficha."]},
 {v:'3.0',d:'23/11/2026',i:["Novos complementos: Heróis de Arton e Ameaças de Arton (escolha ao abrir Tormenta20).", "Raças, origens, poderes, classe Treinador e classes variantes de Heróis de Arton.", "Novos itens, encantos, itens mágicos e magias dos dois livros.", "Distinções: 36 caminhos especiais na aba Habilidades.", "Mestre: aba Bestiário com 498 criaturas, ficha, rolagem de ataques e iniciativa.", "Deslize o dedo para os lados para trocar de aba."]},
 {v:'2.11',d:'23/11/2026',i:["Procurar fichas no aparelho agora mostra onde os backups ficam: a pasta Downloads, com arquivos falha-critica-ano-mês-dia.json."]},
 {v:'2.10',d:'23/11/2026',i:["Procurar fichas no aparelho: escolha uma pasta ou arquivos e o app encontra os backups de fichas, mostra quais são e você escolhe quais adicionar.", "Só arquivos .json e .txt são lidos, a permissão vale só para aquela busca e nada sai do aparelho."]},
@@ -7502,16 +7503,16 @@ setTimeout(()=>{sResume();xDeep()},700);addEventListener('hashchange',xDeep);
 // Ignora: pop-ups abertos, campos de texto, listas que rolam para o lado, seleção de texto e gestos mais verticais que horizontais.
 (()=>{
 let X0=0,Y0=0,T0=0,ok=false;
-const NOSW='input,textarea,select,[contenteditable],.pgt,.bsf,.gmchs,.cp-bar,.vb,table,pre,.noswipe';
+const NOSW='[contenteditable],input[type=range],.pgt,.bsf,.cp-bar,pre,.noswipe';
 const popOpen=()=>[...document.body.children].some(e=>e.firstElementChild&&e.firstElementChild.classList&&e.firstElementChild.classList.contains('pgw'))||!!document.querySelector('#eqa,#eqm,#pgm,#ogm,#dsm,.gmw');
 const hScroll=el=>{for(let e=el;e&&e!==document.body;e=e.parentElement){if(e.scrollWidth>e.clientWidth+4){const o=getComputedStyle(e).overflowX;if(o==='auto'||o==='scroll')return true}}return false};
 const tabs=()=>{const n=document.getElementById('nav');if(!n||n.hidden)return null;const B=[...n.querySelectorAll('button')].filter(b=>b.offsetParent!==null&&!b.disabled);return B.length>1?B:null};
 document.addEventListener('touchstart',e=>{ok=false;if(e.touches.length!==1)return;const t=e.target;
- if(!t||!t.closest||!t.closest('#app')||t.closest(NOSW)||hScroll(t)||popOpen())return;
- X0=e.touches[0].clientX;Y0=e.touches[0].clientY;T0=Date.now();ok=X0>18&&X0<window.innerWidth-18},{passive:true});
+ if(!t||!t.closest||!t.closest('#app')||t.closest(NOSW)||t===document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||hScroll(t)||popOpen())return;
+ X0=e.touches[0].clientX;Y0=e.touches[0].clientY;T0=Date.now();ok=X0>6&&X0<window.innerWidth-6},{passive:true});
 document.addEventListener('touchend',e=>{if(!ok)return;ok=false;const c=e.changedTouches[0];const dx=c.clientX-X0,dy=c.clientY-Y0,dt=Date.now()-T0;
- if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.8||dt>700)return;
- const s=window.getSelection&&String(window.getSelection()||'');if(s)return;
+ if(Math.abs(dx)<40||Math.abs(dx)<Math.abs(dy)*1.15||dt>1000)return;
+ const s=window.getSelection&&String(window.getSelection()||'');if(s&&s.length>2&&!/^(INPUT|TEXTAREA)$/.test((document.activeElement||{}).tagName||''))return;
  const B=tabs();if(!B)return;const i=B.findIndex(b=>b.classList.contains('on'));if(i<0)return;
  const j=i+(dx<0?1:-1);if(j<0||j>=B.length)return;
  try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur()}catch(x){}

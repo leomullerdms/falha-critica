@@ -3881,7 +3881,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.1',APP_D='23/11/2026';
+const APP_V='2.2',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -4136,9 +4136,10 @@ async function flush(){if(!U||busy||first)return;if(!S.q.length&&!S.dq.length){i
 // campanhas do mestre e vínculos de mesa: um documento cada, sem as fichas completas dos jogadores
 const metaRaw=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
 const gmSlim=r=>{try{const o=JSON.parse(r);(o.camps||[]).forEach(c=>{Object.values(c.pl||{}).forEach(p=>{if(p&&p.s)delete p.s})});return JSON.stringify(o)}catch(e){return r}};
-async function pushMeta(api,uid){for(const k of ['fc_gm','fc_links']){const r=metaRaw(k);if(!r)continue;const h=hsh(r);if(S['m_'+k]===h)continue;const d=k==='fc_gm'?gmSlim(r):r;if(d.length>950000)continue;await api.putMeta(uid,k,{d,t:now()});S['m_'+k]=h;sv()}}
-async function pullMeta(api,uid){let changed=false;for(const k of ['fc_gm','fc_links']){try{const m=await api.getMeta(uid,k);if(!m||!m.d)continue;const loc=metaRaw(k);let empty=!loc;try{const o=JSON.parse(loc||'{}');empty=empty||(k==='fc_gm'?!(o.camps&&o.camps.length):!Object.keys(o).length)}catch(e){}
-  if(empty){localStorage.setItem(k,m.d);S['m_'+k]=hsh(m.d);changed=true}}catch(e){}}sv();return changed}
+async function pushMeta(api,uid){for(const k of ['fc_gm','fc_links']){const r=metaRaw(k);if(metaEmpty(k,r))continue;const h=hsh(r);if(S['m_'+k]===h)continue;const d=k==='fc_gm'?gmSlim(r):r;if(d.length>950000)continue;await api.putMeta(uid,k,{d,t:now()});S['m_'+k]=h;sv()}}
+const metaEmpty=(k,r)=>{if(!r)return true;try{const o=JSON.parse(r);return k==='fc_gm'?!(o&&o.camps&&o.camps.length):!(o&&Object.keys(o).length)}catch(e){return true}};
+async function pullMeta(api,uid){let changed=false;for(const k of ['fc_gm','fc_links']){try{const m=await api.getMeta(uid,k);if(!m||!m.d||metaEmpty(k,m.d))continue;const loc=metaRaw(k);
+  if(metaEmpty(k,loc)&&loc!==m.d){localStorage.setItem(k,m.d);S['m_'+k]=hsh(m.d);changed=true}}catch(e){}}sv();return changed}
 function applyRemote(list){let touched=false,hubDirty=false;
  list.forEach(({id,v,mine})=>{if(mine||!v)return;const t=+v.t||0,lt=S.mt[id]||0;
   if(t<=lt&&S.last[id]!==undefined)return;
@@ -4165,7 +4166,7 @@ async function start(u){U=u;err='';first=true;set('sync');const api=await fb();
    lastRaw=raw();sv();first=false;flushSoon(0);
    if(up&&!S.welcomed){toast(up+(up>1?' fichas deste aparelho foram salvas':' ficha deste aparelho foi salva')+' na sua conta')}
    if(!S.welcomed){S.welcomed=1;sv()}
-   if(metaChanged){toast('Suas campanhas foram restauradas');setTimeout(()=>location.reload(),900)}
+   if(metaChanged){let rl=0;try{rl=+sessionStorage.getItem('fc_cld_rl')||0}catch(e){}if(now()-rl>60000){try{sessionStorage.setItem('fc_cld_rl',now())}catch(e){}toast('Suas campanhas foram restauradas');setTimeout(()=>location.reload(),900)}}
    return}
   applyRemote(changes)},e=>{set('err')});
  paint();hubRefresh()}

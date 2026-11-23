@@ -307,6 +307,14 @@ html.hubm .top h1::before{width:58px!important;height:58px!important;margin:-12p
 .nov-a{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:rgba(79,209,197,.18);color:#2fae9f}
 .nov-v ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5}
 .nov-v li{margin:2px 0}
+.sc-ok{margin:8px 0 14px;padding-left:18px;font-size:14px;line-height:1.5}
+.sc-busy{display:flex;flex-direction:column;gap:4px;padding:18px 0}
+.sc-l{display:flex;flex-direction:column;gap:6px;margin:10px 0 14px;max-height:48vh;overflow:auto}
+.sc-i{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line,rgba(127,127,127,.3));border-radius:12px;cursor:pointer}
+.sc-i input{width:20px;height:20px;flex:none;accent-color:#3cbfb3}
+.sc-i>span{display:flex;flex-direction:column;min-width:0}
+.sc-i .mut{font-size:13px}
+.sc-i.dup{opacity:.55}
 /* Clarissima Luceat */
 #clp{position:fixed;inset:0;z-index:58;background:rgba(10,8,8,.62);display:flex;align-items:flex-end;justify-content:center}
 #clp .pgw>#clb{overflow-y:auto;flex:1 1 auto;min-height:0;padding-bottom:18px;-webkit-overflow-scrolling:touch}
@@ -3908,7 +3916,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.targe
  b=t.closest('[data-mgl]');if(b){const m=cur.mg[+b.dataset.mgl],s=m&&spFind(m.n);if(s){m.ref=s.n;m.ci=s.c;m.es=s.e;save();toast('Usando o catálogo: '+s.n+' ('+CPM[s.c-1]+' PM)');sheet()}}});
 // ===== MAGIAS (fim) =====
 // ===== BACKUP (início) =====
-const APP_V='2.9',APP_D='23/11/2026';
+const APP_V='2.10',APP_D='23/11/2026';
 const BK_K='t20_bk',BK_S='t20fichas_snap';
 const bkGet=()=>{try{return JSON.parse(localStorage.getItem(BK_K)||'{}')||{}}catch(e){return{}}};
 const bkPut=o=>{try{localStorage.setItem(BK_K,JSON.stringify(Object.assign(bkGet(),o)))}catch(e){}};
@@ -3964,7 +3972,7 @@ const bkRender=()=>{const m=document.getElementById('bkw');if(!m)return;const b=
  if(BK_.imp){const I=BK_.imp;const bkNm=I.a.map(c=>c.nome||'Sem nome').concat(I.camps.map(c=>'campanha '+(c.nome||'')));h+=`<div class='bkc'><b>Arquivo com ${[I.a.length?I.a.length+' ficha'+(I.a.length>1?'s':''):'',I.camps.length?I.camps.length+' campanha'+(I.camps.length>1?'s':''):''].filter(Boolean).join(' e ')}</b><div class='mut'>${esc(bkNm.slice(0,6).join(', '))}${bkNm.length>6?'…':''}${I.meta.e?'<br>Salvo em '+esc(bkDt(I.meta.e)):''}</div><div class='mut'>Mesclar adiciona as fichas ao que você já tem (nada é apagado). Substituir troca tudo. Em qualquer caso o app guarda uma cópia antes.</div><div class='bkbt'><button type='button' class='go' data-bk='merge'>Mesclar com as minhas fichas</button><button type='button' data-bk='replace'>Substituir tudo</button><button type='button' data-bk='icancel'>Cancelar</button></div></div>`}
  else if(BK_.rst>=0&&L[BK_.rst]){const S=L[BK_.rst];h+=`<div class='bkc'><b>Restaurar a cópia de ${esc(bkDt(S.t))}?</b><div class='mut'>${S.n} ficha${S.n>1?'s':''}. As fichas de agora ficam guardadas em uma cópia antes.</div><div class='bkbt'><button type='button' class='go' data-bk='dorst'>Restaurar</button><button type='button' data-bk='icancel'>Cancelar</button></div></div>`}
  h+=`<div class='hb'><div>Fichas neste aparelho: <b>${db.length}</b>${bkGmN()?` · campanhas: <b>${bkGmN()}</b>`:''}</div><div>Último backup em arquivo: ${b.last?`<b>${esc(bkDt(b.last))}</b>`:'<b style="color:var(--redd)">nenhum ainda</b>'}</div><div>Armazenamento protegido: <b>${pers}</b></div><div class='mut' style='margin-top:6px'>As fichas ficam guardadas só neste navegador. Se você limpar os dados do site, trocar de navegador ou de aparelho, elas somem. Salve um arquivo de vez em quando e guarde fora do celular (Drive, WhatsApp, e-mail).</div></div>`;
- h+=`<div class='bkbt'><button type='button' class='go' data-bk='file'>Salvar arquivo de backup</button>${bkCanShare()?`<button type='button' data-bk='share'>Enviar backup (WhatsApp, Drive…)</button>`:''}<button type='button' data-bk='pick'>Importar arquivo de backup</button>${window.xferOpen?`<button type='button' data-bk='xfer'>Passar fichas para outro aparelho</button>`:''}<input type='file' id='bkf' accept='.json,.txt,application/json,text/plain' hidden></div>`;
+ h+=`<div class='bkbt'><button type='button' class='go' data-bk='file'>Salvar arquivo de backup</button>${bkCanShare()?`<button type='button' data-bk='share'>Enviar backup (WhatsApp, Drive…)</button>`:''}<button type='button' data-bk='pick'>Importar arquivo de backup</button>${window.scanOpen?`<button type='button' data-bk='scan'>Procurar fichas no aparelho</button>`:''}${window.xferOpen?`<button type='button' data-bk='xfer'>Passar fichas para outro aparelho</button>`:''}<input type='file' id='bkf' accept='.json,.txt,application/json,text/plain' hidden></div>`;
  h+=`<div class='mgh'>Cópias automáticas</div><div class='mut' style='margin:4px 0'>O app guarda uma cópia a cada 30 minutos de uso e antes de apagar, importar ou restaurar. Ficam só neste aparelho; as 6 mais recentes.</div>`;
  h+=L.length?L.map((s,i)=>`<div class='bks'><div><b>${esc(bkDt(s.t))}</b><div class='mut'>${s.n} ficha${s.n>1?'s':''} · ${esc(s.w==='uso'?'uso':s.w)}</div></div><button type='button' data-bk='rst:${i}'>Restaurar</button></div>`).join(''):`<div class='pgi'>Nenhuma cópia ainda.</div>`;
  h+=`<div class='mgh'>Avançado</div><div class='bkbt'><button type='button' data-bk='txt'>${BK_.txt?'Esconder o texto':'Copiar ou colar como texto'}</button></div>`;
@@ -3984,6 +3992,7 @@ const bkAct=async a=>{
  if(a==='file'){bkDone(await bkSave('file'));bkRender();return}
  if(a==='share'){bkDone(await bkSave('share'));bkRender();return}
  if(a==='xfer'){bkClose();if(window.xferOpen)xferOpen();return}
+ if(a==='scan'){bkClose();if(window.scanOpen)scanOpen();return}
  if(a==='pick'){const f=document.getElementById('bkf');if(f)f.click();return}
  if(a==='merge'||a==='replace'){bkApply(a);return}
  if(a==='icancel'){BK_.imp=null;BK_.rst=-1;bkRender();return}
@@ -4084,7 +4093,7 @@ function hub(){
  $('#ttl').textContent='Falha Crítica';$('#bk').hidden=true;$('#nav').hidden=true;
  const card=s=>{const n=s.conta(),U=s.un||['ficha','fichas'];if(s.lock)return `<div class="card sys cover locked" role="button" tabindex="0" aria-disabled="true" data-lock="${s.id}" aria-label="${esc(s.nome)} · bloqueado">${s.img?`<img src="${s.img}" alt="" draggable="false">`:''}<span class="lockb" aria-hidden="true">${LOCKSVG}<b>Bloqueado</b></span></div>`;if(s.img)return `<div class="card sys cover" role="button" tabindex="0" data-sys="${s.id}" aria-label="${esc(s.nome)} · ${n?n+' '+(n>1?U[1]:U[0]):'nenhuma '+U[0]}"><img src="${s.img}" alt="${esc(s.nome)}" draggable="false"></div>`;return `<div class="card sys${s.cls?' '+s.cls:''}" role="button" tabindex="0" data-sys="${s.id}"><div class="crest" aria-hidden="true">${esc(s.sigla)}</div><div><div class="ct">${esc(s.nome)}</div><div class="mut">${esc(s.sub)}</div><div class="sn">${n?n+' '+(n>1?U[1]:U[0]):'Nenhuma '+U[0]+' ainda'}</div></div><span class="go" aria-hidden="true">›</span></div>`};
  const tot=db.length;
- $('#app').innerHTML=`${window.cloudHtml?cloudHtml():''}<div class="hml"><b>Escolha o sistema</b><span>${tot?tot+(tot>1?' fichas':' ficha'):'nenhuma ficha'}</span></div>${SYSTEMS.map(card).join('')}<div class="soon"><i aria-hidden="true">+</i><div><div class="ct">Novos sistemas</div><div class="mut">Em breve</div></div></div>${window.novidCard?novidCard():''}${bkBanner()}<div class="row" style="margin:18px 2px 6px"><button class="btn" id="bkp">Backup de todas as fichas</button></div><div class="row" style="margin:0 2px 6px"><button class="btn" data-xfer="1">Passar fichas entre aparelhos</button></div>`;
+ $('#app').innerHTML=`${window.cloudHtml?cloudHtml():''}<div class="hml"><b>Escolha o sistema</b><span>${tot?tot+(tot>1?' fichas':' ficha'):'nenhuma ficha'}</span></div>${SYSTEMS.map(card).join('')}<div class="soon"><i aria-hidden="true">+</i><div><div class="ct">Novos sistemas</div><div class="mut">Em breve</div></div></div>${window.novidCard?novidCard():''}${bkBanner()}<div class="row" style="margin:18px 2px 6px"><button class="btn" id="bkp">Backup de todas as fichas</button></div><div class="row" style="margin:0 2px 6px"><button class="btn" data-xfer="1">Passar fichas entre aparelhos</button></div><div class="row" style="margin:0 2px 6px"><button class="btn" data-scan="1">Procurar fichas no aparelho</button></div>`;
  $('#app').insertAdjacentHTML('beforeend',bkFoot()+(window.legalFoot?legalFoot():''));
  window.scrollTo(0,0);
 }
@@ -4232,6 +4241,7 @@ try{document.documentElement.style.setProperty('--fclogo','url('+FC_LOGO.s+')')}
 // ===== NOVIDADES (o que mudou em cada versão; o publicar.sh acrescenta a nova no topo) =====
 const NOVID=[
 //NOVID_TOPO
+{v:'2.10',d:'23/11/2026',i:["Procurar fichas no aparelho: escolha uma pasta ou arquivos e o app encontra os backups de fichas, mostra quais são e você escolhe quais adicionar.", "Só arquivos .json e .txt são lidos, a permissão vale só para aquela busca e nada sai do aparelho."]},
 {v:'2.9',d:'23/11/2026',i:['Novidades na tela inicial: veja o que mudou nas últimas versões.']},
 {v:'2.8',d:'23/11/2026',i:['Botão “Excluir conta” no menu da conta, com aviso e confirmação.']},
 {v:'2.7',d:'23/11/2026',i:['Logo sem fundo e crédito da artista (@eu.juliamaria.p) na aba Sobre.','Mais segurança: arquivos recebidos na mesa que não sejam imagem, vídeo, áudio, PDF ou texto só podem ser baixados, nunca abertos dentro do app.']},
@@ -4261,6 +4271,56 @@ window.novidOpen=()=>{const old=document.getElementById('novw');if(old)old.remov
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest?e.target.closest('[data-novid]'):null;if(b)novidOpen()});
 })();
 // ===== NOVIDADES (fim) =====
+// ===== PROCURAR FICHAS NO APARELHO =====
+// O navegador não deixa nenhum site olhar os arquivos sozinho: a pessoa escolhe uma pasta (ou arquivos) a cada busca.
+// Só lemos arquivos .json/.txt pequenos, só guardamos o que for ficha e nada sai do aparelho.
+(()=>{
+const EXT=/\.(json|txt)$/i,MAXF=8*1048576,MAXN=3000,DEPTH=4;
+const S={st:'idle',files:0,read:0,found:[],skip:0,sel:{}};
+const canDir=()=>typeof window.showDirectoryPicker==='function';
+const canWkd=()=>{try{return 'webkitdirectory' in document.createElement('input')&&!/Android|iPhone|iPad/i.test(navigator.userAgent)}catch(e){return false}};
+const dt=t=>{try{return new Date(t).toLocaleDateString('pt-BR')}catch(e){return ''}};
+const desc=c=>{const cl=(c.cls||[]).filter(x=>x&&x.n).map(x=>x.n+' '+(x.l||'')).join(' / ')||c.classe||'';return [c.raca,cl].filter(Boolean).join(' · ')};
+const same=c=>{try{const ex=db.find(x=>x.id===c.id);return !!ex&&JSON.stringify(ex)===JSON.stringify(fix(JSON.parse(JSON.stringify(c))))}catch(e){return false}};
+async function readOne(f,path){S.files++;if(!EXT.test(f.name)||f.size>MAXF||f.size<10){S.skip++;return}
+ let txt;try{txt=await f.text()}catch(e){return}S.read++;let p;try{p=bkParse(txt)}catch(e){return}
+ const when=Date.parse(p.meta.e||'')||f.lastModified||0;
+ p.a.forEach(c=>{if(!c||!c.id)c.id=(c&&c.id)||('s'+Math.random().toString(36).slice(2));const k=c.id;const old=S.found.find(x=>x.c.id===k);
+  if(old){if(when>old.when){old.c=c;old.when=when;old.from=path}return}
+  S.found.push({c,when,from:path})})}
+async function walk(dir,path,d){if(d>DEPTH)return;for await(const [nm,h] of dir.entries()){if(S.files>=MAXN||S.st==='stop')return;
+ if(h.kind==='file'){if(EXT.test(nm))await readOne(await h.getFile(),path+nm);else S.files++}
+ else if(!nm.startsWith('.')&&!/^(Android|node_modules)$/i.test(nm))await walk(h,path+nm+'/',d+1);if(S.files%25===0)paint()}}
+function finish(){S.st='done';S.found.sort((a,b)=>b.when-a.when);S.sel={};S.found.forEach((x,i)=>{if(!same(x.c))S.sel[i]=1});paint()}
+async function fromList(list){S.st='busy';paint();for(const f of list){if(S.files>=MAXN)break;await readOne(f,(f.webkitRelativePath||f.name));if(S.files%25===0)paint()}finish()}
+async function pickDir(){try{const d=await window.showDirectoryPicker({mode:'read'});S.st='busy';reset(false);paint();await walk(d,d.name+'/',0);finish()}catch(e){if(e&&e.name==='AbortError')return;toast('Não deu para abrir a pasta. Tente escolher os arquivos.')}}
+function pickInput(dir){const i=document.createElement('input');i.type='file';i.multiple=true;if(dir)i.webkitdirectory=true;else i.accept='.json,.txt,application/json,text/plain';i.hidden=true;document.body.append(i);
+ i.addEventListener('change',()=>{const L=[...(i.files||[])];i.remove();if(!L.length)return;reset(false);fromList(L)});i.click()}
+function reset(all){S.files=0;S.read=0;S.found=[];S.skip=0;S.sel={};if(all)S.st='idle'}
+function body(){
+ if(S.st==='idle')return `<p>O Falha Crítica procura <b>arquivos de backup de fichas</b> (.json ou .txt) no lugar que você escolher, como a pasta <b>Downloads</b>.</p>
+  <ul class="sc-ok"><li>Você escolhe a pasta ou os arquivos, e a permissão vale só para esta busca.</li><li>Só são lidos arquivos .json e .txt pequenos. Fotos, vídeos e outros arquivos são ignorados.</li><li>Nada é enviado para fora do aparelho: você escolhe quais fichas entram no app.</li></ul>
+  <div class="bkbt">${canDir()?`<button type="button" class="go" data-sc="dir">Escolher uma pasta</button>`:canWkd()?`<button type="button" class="go" data-sc="wkd">Escolher uma pasta</button>`:''}<button type="button" class="${canDir()||canWkd()?'':'go'}" data-sc="files">${canDir()||canWkd()?'Escolher arquivos':'Escolher arquivos (selecione vários)'}</button></div>
+  ${canDir()||canWkd()?'':'<p class="mut">No celular, abra a pasta Downloads no seletor e marque os arquivos de backup (geralmente “falha-critica-….json”). Pode marcar vários de uma vez.</p>'}`;
+ if(S.st==='busy')return `<div class="sc-busy" role="status"><b>Procurando fichas…</b><span class="mut">${S.files} arquivo${S.files===1?'':'s'} vistos · ${S.found.length} ficha${S.found.length===1?'':'s'} encontrada${S.found.length===1?'':'s'}</span></div>`;
+ if(!S.found.length)return `<p><b>Nenhuma ficha encontrada.</b></p><p class="mut">Olhei ${S.files} arquivo${S.files===1?'':'s'}. Confira se escolheu a pasta onde o backup foi salvo (no app antigo: Backup de todas as fichas › Salvar arquivo de backup).</p><div class="bkbt"><button type="button" data-sc="again">Procurar de novo</button></div>`;
+ const n=Object.keys(S.sel).length;
+ return `<p><b>${S.found.length} ficha${S.found.length>1?'s':''} encontrada${S.found.length>1?'s':''}</b> <span class="mut">em ${S.read} arquivo${S.read>1?'s':''} lido${S.read>1?'s':''}. Quando a mesma ficha aparece em vários backups, fica a versão mais nova.</span></p>
+ <div class="sc-l">${S.found.map((x,i)=>{const dup=same(x.c);return `<label class="sc-i${dup?' dup':''}"><input type="checkbox" data-sci="${i}" ${S.sel[i]?'checked':''} ${dup?'disabled':''}><span><b>${esc(x.c.nome||'Sem nome')}</b><span class="mut">${esc(desc(x.c))}${desc(x.c)?' · ':''}${dup?'já está no app':'salva em '+esc(dt(x.when))}</span></span></label>`}).join('')}</div>
+ <div class="bkbt"><button type="button" class="go" data-sc="imp" ${n?'':'disabled'}>Adicionar ${n} ficha${n===1?'':'s'}</button><button type="button" data-sc="again">Procurar em outro lugar</button></div>`}
+function paint(){const m=document.getElementById('scw');if(!m)return;const b=m.querySelector('.sc-b');if(b)b.innerHTML=body()}
+window.scanOpen=()=>{const old=document.getElementById('scw');if(old)old.remove();reset(true);
+ const m=document.createElement('div');m.className='gmw';m.id='scw';
+ m.innerHTML=`<div class="pgw" role="dialog" aria-modal="true" aria-label="Procurar fichas no aparelho"><div class="pgh"><b>Procurar fichas no aparelho</b><button type="button" data-sc="x" aria-label="Fechar">✕</button></div><div class="gmb sc-b">${body()}</div></div>`;
+ document.body.append(m);document.body.style.overflow='hidden';
+ const close=()=>{S.st='stop';m.remove();document.body.style.overflow=''};
+ m.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.sci!==undefined){const i=+t.dataset.sci;if(t.checked)S.sel[i]=1;else delete S.sel[i];const n=Object.keys(S.sel).length,b=m.querySelector('[data-sc=imp]');if(b){b.disabled=!n;b.textContent='Adicionar '+n+' ficha'+(n===1?'':'s')}}});
+ m.addEventListener('click',e=>{if(e.target===m){close();return}const b=e.target.closest('[data-sc]');if(!b)return;const a=b.dataset.sc;
+  if(a==='x')close();else if(a==='dir')pickDir();else if(a==='wkd')pickInput(true);else if(a==='files')pickInput(false);else if(a==='again'){reset(true);paint()}
+  else if(a==='imp'){const L=Object.keys(S.sel).map(i=>S.found[+i].c);if(!L.length)return;try{bkSnap(true,'antes de importar')}catch(x){}const r=bkMerge(L);save();close();cur=null;bkRefresh();toast(r.add+' ficha'+(r.add===1?' adicionada':'s adicionadas')+(window.FCCLOUD&&FCCLOUD.state().U?' · subindo para a nuvem':''))}})};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest?e.target.closest('[data-scan]'):null;if(b){e.preventDefault();scanOpen()}});
+})();
+// ===== PROCURAR FICHAS (fim) =====
 // ===== PRIVACIDADE, TERMOS E SOBRE (LGPD) =====
 (()=>{
 const LG_NOME='Leonardo Müller',LG_MAIL='leonardomullerdomingos16@gmail.com',LG_DATA='23/11/2026';

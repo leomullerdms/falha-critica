@@ -258,6 +258,28 @@ html.hubm .grp,html.hubm .mgh{font:700 16px var(--text);font-variant:normal;lett
 .card.sys.locked .lockb b{font-size:13px;letter-spacing:.04em}
 .card.gmsy.locked{opacity:.6}
 .card.gmsy.locked .crest svg{width:22px;height:22px}
+/* conta e nuvem */
+.cld{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:4px 2px 16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.cld-t{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:3px}
+.cld-t b{font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cld-t span{font-size:13px;line-height:1.35}
+.cld-g{flex:1 1 100%;display:flex;align-items:center;justify-content:center;gap:10px;height:46px;border-radius:10px;border:1px solid #dadce0;background:#fff;color:#1f1f1f;font:600 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;cursor:pointer}
+.cld-g:disabled{opacity:.7}
+.cld-e{flex-basis:100%;font-size:13px;color:var(--red)}
+.cld.in{flex-wrap:nowrap}
+.cld-me{flex:none;width:44px;height:44px;padding:0;border-radius:50%;border:2px solid var(--line);overflow:hidden;background:var(--red);color:#fff;font-weight:700;font-size:18px;cursor:pointer}
+.cld-me img{width:100%;height:100%;object-fit:cover;display:block}
+.cld.in .btn{flex:none}
+.cld-s{color:var(--mut)}
+.cld-s.ok{color:var(--ok,#3a9d5d)}
+.cld-s.err,.cld-s.offline{color:#c98a1a}
+.cld-acc{display:flex;align-items:center;gap:12px}
+.cld-acc img{width:48px;height:48px;border-radius:50%}
+.cld-acc b{display:block}
+.cld-acc .mut{font-size:13px}
+.cld-dz{margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
+.cld-dz summary{cursor:pointer;color:var(--red);font-weight:600;font-size:14px}
+.cld-del{border-color:var(--red)!important;color:var(--red)!important}
 /* Clarissima Luceat */
 #clp{position:fixed;inset:0;z-index:58;background:rgba(10,8,8,.62);display:flex;align-items:flex-end;justify-content:center}
 #clp .pgw>#clb{overflow-y:auto;flex:1 1 auto;min-height:0;padding-bottom:18px;-webkit-overflow-scrolling:touch}
@@ -4035,7 +4057,7 @@ function hub(){
  $('#ttl').textContent='Falha Crítica';$('#bk').hidden=true;$('#nav').hidden=true;
  const card=s=>{const n=s.conta(),U=s.un||['ficha','fichas'];if(s.lock)return `<div class="card sys cover locked" role="button" tabindex="0" aria-disabled="true" data-lock="${s.id}" aria-label="${esc(s.nome)} · bloqueado">${s.img?`<img src="${s.img}" alt="" draggable="false">`:''}<span class="lockb" aria-hidden="true">${LOCKSVG}<b>Bloqueado</b></span></div>`;if(s.img)return `<div class="card sys cover" role="button" tabindex="0" data-sys="${s.id}" aria-label="${esc(s.nome)} · ${n?n+' '+(n>1?U[1]:U[0]):'nenhuma '+U[0]}"><img src="${s.img}" alt="${esc(s.nome)}" draggable="false"></div>`;return `<div class="card sys${s.cls?' '+s.cls:''}" role="button" tabindex="0" data-sys="${s.id}"><div class="crest" aria-hidden="true">${esc(s.sigla)}</div><div><div class="ct">${esc(s.nome)}</div><div class="mut">${esc(s.sub)}</div><div class="sn">${n?n+' '+(n>1?U[1]:U[0]):'Nenhuma '+U[0]+' ainda'}</div></div><span class="go" aria-hidden="true">›</span></div>`};
  const tot=db.length;
- $('#app').innerHTML=`<div class="hml"><b>Escolha o sistema</b><span>${tot?tot+(tot>1?' fichas':' ficha'):'nenhuma ficha'}</span></div>${SYSTEMS.map(card).join('')}<div class="soon"><i aria-hidden="true">+</i><div><div class="ct">Novos sistemas</div><div class="mut">Em breve</div></div></div>${bkBanner()}<div class="row" style="margin:18px 2px 6px"><button class="btn" id="bkp">Backup de todas as fichas</button></div><div class="row" style="margin:0 2px 6px"><button class="btn" data-xfer="1">Passar fichas entre aparelhos</button></div>`;
+ $('#app').innerHTML=`${window.cloudHtml?cloudHtml():''}<div class="hml"><b>Escolha o sistema</b><span>${tot?tot+(tot>1?' fichas':' ficha'):'nenhuma ficha'}</span></div>${SYSTEMS.map(card).join('')}<div class="soon"><i aria-hidden="true">+</i><div><div class="ct">Novos sistemas</div><div class="mut">Em breve</div></div></div>${bkBanner()}<div class="row" style="margin:18px 2px 6px"><button class="btn" id="bkp">Backup de todas as fichas</button></div><div class="row" style="margin:0 2px 6px"><button class="btn" data-xfer="1">Passar fichas entre aparelhos</button></div>`;
  $('#app').insertAdjacentHTML('beforeend',bkFoot());
  window.scrollTo(0,0);
 }
@@ -4044,6 +4066,136 @@ function openSys(id){const s=SYSTEMS.find(x=>x.id===id);if(!s||s.lock)return;tra
 document.addEventListener('click',e=>{const l=e.target&&e.target.closest?e.target.closest('[data-lock]'):null;if(l){toast('Este sistema está bloqueado por enquanto');return}const c=e.target&&e.target.closest?e.target.closest('[data-sys]'):null;if(c)openSys(c.dataset.sys)});
 document.addEventListener('keydown',e=>{const c=e.target&&e.target.matches&&e.target.matches('[data-sys]')?e.target:null;if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openSys(c.dataset.sys)}});
 // ===== SISTEMAS (fim) =====
+// ===== CONTA E NUVEM (login com Google + Firestore) =====
+// As fichas continuam salvas no aparelho (localStorage). Com login, cada ficha também vai para
+// users/{uid}/fichas/{id} no Firestore e volta para os outros aparelhos da mesma conta.
+// O SDK do Firebase só é baixado (gstatic) quando a pessoa usa a conta.
+(()=>{
+const FBV='10.14.1';
+const CFG={apiKey:"AIzaSyCLkGhTGPV0MkTUl175v1Hk7ClVHMSrbaY",authDomain:"falha-critica-2f785.firebaseapp.com",projectId:"falha-critica-2f785",storageBucket:"falha-critica-2f785.firebasestorage.app",messagingSenderId:"938368969490",appId:"1:938368969490:web:67666f2e3123f8a33aa1cb"};
+const K='fc_cloud';
+const ON=()=>{try{return /(\.github\.io|\.web\.app|\.firebaseapp\.com)$/.test(location.hostname)||!!window.FC_FBMOCK||localStorage.getItem('fc_cloud_force')==='1'}catch(e){return false}};
+let S=(()=>{try{return JSON.parse(localStorage.getItem(K)||'null')||{}}catch(e){return {}}})();
+const sv=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+S.last=S.last||{};S.mt=S.mt||{};S.q=S.q||[];S.dq=S.dq||[];
+let U=null,ST='off',LP=null,unsub=null,lastRaw=null,first=true,busy=false,flushT=null,err='',deferred={};
+const hsh=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+':'+s.length};
+const now=()=>Date.now();
+// ---------- adaptador Firebase (ou simulado nos testes) ----------
+const fb=()=>window.FC_FBMOCK?Promise.resolve(window.FC_FBMOCK):LP||(LP=(async()=>{
+ const B='https://www.gstatic.com/firebasejs/'+FBV+'/';
+ const [A,Au,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+ const app=A.initializeApp(CFG),auth=Au.getAuth(app),db_=F.getFirestore(app);
+ try{await Au.setPersistence(auth,Au.browserLocalPersistence)}catch(e){}
+ const prov=()=>{const p=new Au.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});return p};
+ Au.getRedirectResult(auth).catch(()=>{});
+ const col=uid=>F.collection(db_,'users',uid,'fichas');
+ const api={
+  onUser:cb=>Au.onAuthStateChanged(auth,u=>cb(u?{uid:u.uid,name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}:null)),
+  signIn:async()=>{try{await Au.signInWithPopup(auth,prov())}catch(e){if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')){await Au.signInWithRedirect(auth,prov());return}throw e}},
+  signOut:()=>Au.signOut(auth),
+  watch:(uid,cb,ecb)=>F.onSnapshot(col(uid),{includeMetadataChanges:false},snap=>cb(snap.docChanges().map(ch=>({id:ch.doc.id,type:ch.type,v:ch.doc.data(),mine:ch.doc.metadata.hasPendingWrites}))),ecb),
+  put:(uid,id,v)=>F.setDoc(F.doc(db_,'users',uid,'fichas',id),v),
+  putMeta:(uid,k,v)=>F.setDoc(F.doc(db_,'users',uid,'meta',k),v),
+  getMeta:async(uid,k)=>{const d=await F.getDoc(F.doc(db_,'users',uid,'meta',k));return d.exists()?d.data():null},
+  putUser:(uid,v)=>F.setDoc(F.doc(db_,'users',uid),v,{merge:true}),
+  wipe:async uid=>{for(const sub of ['fichas','meta']){const s=await F.getDocs(F.collection(db_,'users',uid,sub));let b=F.writeBatch(db_),n=0;for(const d of s.docs){b.delete(d.ref);if(++n>=400){await b.commit();b=F.writeBatch(db_);n=0}}if(n)await b.commit()}await F.deleteDoc(F.doc(db_,'users',uid))},
+  delUser:async()=>{const u=auth.currentUser;if(!u)return;try{await Au.deleteUser(u)}catch(e){if(e&&e.code==='auth/requires-recent-login'){await Au.reauthenticateWithPopup(u,prov());await Au.deleteUser(auth.currentUser)}else throw e}}
+ };
+ return api})().catch(e=>{LP=null;throw e}));
+// ---------- estado na tela ----------
+const stTxt=()=>ST==='sync'?'Sincronizando…':ST==='ok'?'Fichas salvas na nuvem':ST==='offline'?'Sem conexão: salvo no aparelho, sobe quando voltar':ST==='err'?'Não deu para sincronizar agora. Tentando de novo…':ST==='load'?'Conectando…':'';
+const paint=()=>{const el=document.getElementById('cldst');if(el){el.textContent=stTxt();el.className='cld-s '+ST}const c=document.getElementById('cld');if(c&&c.dataset.st!==(U?'in':'out')+(ST==='load'?'l':''))hubRefresh()};
+const hubRefresh=()=>{if(typeof SYS!=='undefined'&&SYS===null&&document.getElementById('cld')&&typeof hub==='function'){const y=scrollY;hub();scrollTo(0,y)}};
+const set=s=>{ST=s;paint()};
+const G='<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+window.cloudHtml=()=>{if(!ON())return '';
+ if(!U)return `<div class="cld" id="cld" data-st="out${ST==='load'?'l':''}"><div class="cld-t"><b>Suas fichas em qualquer aparelho</b><span class="mut">Entre com o Google para guardar as fichas na nuvem. Sem login, elas ficam só neste aparelho.</span></div><button type="button" class="cld-g" data-cld="in"${ST==='load'?' disabled':''}>${G}<span>${ST==='load'?'Conectando…':'Entrar com Google'}</span></button>${err?`<div class="cld-e">${esc(err)}</div>`:''}</div>`;
+ const ini=(U.name||U.email||'?').trim().charAt(0).toUpperCase();
+ return `<div class="cld in" id="cld" data-st="in"><button type="button" class="cld-me" data-cld="menu" aria-label="Conta: ${esc(U.name||U.email)}">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(ini)}</span>`}</button><div class="cld-t"><b>${esc(U.name||U.email)}</b><span class="cld-s ${ST}" id="cldst">${esc(stTxt())}</span></div><button type="button" class="btn" data-cld="menu">Conta</button></div>`};
+// ---------- sincronização ----------
+const raw=()=>{try{return localStorage.getItem('t20fichas')||'[]'}catch(e){return '[]'}};
+const qAdd=id=>{if(!S.q.includes(id))S.q.push(id);S.dq=S.dq.filter(x=>x!==id)};
+const dqAdd=id=>{if(!S.dq.includes(id))S.dq.push(id);S.q=S.q.filter(x=>x!==id)};
+function scan(){if(!U)return;const r=raw();if(r===lastRaw)return;lastRaw=r;let arr;try{arr=JSON.parse(r)}catch(e){return}
+ const seen={};let ch=false;
+ arr.forEach(c=>{if(!c||!c.id)return;seen[c.id]=1;const h=hsh(JSON.stringify(c));if(S.last[c.id]!==h){S.last[c.id]=h;S.mt[c.id]=now();qAdd(c.id);ch=true}});
+ Object.keys(S.last).forEach(id=>{if(!seen[id]&&!deferred[id]){delete S.last[id];S.mt[id]=now();dqAdd(id);ch=true}});
+ if(ch){sv();flushSoon()}}
+const flushSoon=(ms)=>{clearTimeout(flushT);flushT=setTimeout(flush,ms==null?1200:ms)};
+async function flush(){if(!U||busy||first)return;if(!S.q.length&&!S.dq.length){if(ST!=='offline')set('ok');return}
+ if(navigator.onLine===false){set('offline');return}
+ busy=true;set('sync');const api=await fb();const uid=U.uid;
+ try{
+  while(S.q.length&&U&&U.uid===uid){const id=S.q[0],c=db.find(x=>x.id===id);if(c){const d=JSON.stringify(c);if(d.length>950000){toast('A ficha “'+(c.nome||'sem nome')+'” é grande demais para a nuvem');S.q.shift();continue}await api.put(uid,id,{d,t:S.mt[id]||now(),n:(c.nome||'').slice(0,80),sis:c.sis||'t20'})}S.q.shift();sv()}
+  while(S.dq.length&&U&&U.uid===uid){const id=S.dq[0];await api.put(uid,id,{del:true,t:S.mt[id]||now()});S.dq.shift();sv()}
+  await pushMeta(api,uid);
+  set('ok')}
+ catch(e){set(navigator.onLine===false?'offline':'err');setTimeout(()=>flushSoon(0),8000)}
+ finally{busy=false}}
+// campanhas do mestre e vínculos de mesa: um documento cada, sem as fichas completas dos jogadores
+const metaRaw=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const gmSlim=r=>{try{const o=JSON.parse(r);(o.camps||[]).forEach(c=>{Object.values(c.pl||{}).forEach(p=>{if(p&&p.s)delete p.s})});return JSON.stringify(o)}catch(e){return r}};
+async function pushMeta(api,uid){for(const k of ['fc_gm','fc_links']){const r=metaRaw(k);if(!r)continue;const h=hsh(r);if(S['m_'+k]===h)continue;const d=k==='fc_gm'?gmSlim(r):r;if(d.length>950000)continue;await api.putMeta(uid,k,{d,t:now()});S['m_'+k]=h;sv()}}
+async function pullMeta(api,uid){let changed=false;for(const k of ['fc_gm','fc_links']){try{const m=await api.getMeta(uid,k);if(!m||!m.d)continue;const loc=metaRaw(k);let empty=!loc;try{const o=JSON.parse(loc||'{}');empty=empty||(k==='fc_gm'?!(o.camps&&o.camps.length):!Object.keys(o).length)}catch(e){}
+  if(empty){localStorage.setItem(k,m.d);S['m_'+k]=hsh(m.d);changed=true}}catch(e){}}sv();return changed}
+function applyRemote(list){let touched=false,hubDirty=false;
+ list.forEach(({id,v,mine})=>{if(mine||!v)return;const t=+v.t||0,lt=S.mt[id]||0;
+  if(t<=lt&&S.last[id]!==undefined)return;
+  if(typeof cur!=='undefined'&&cur&&cur.id===id&&t>lt){deferred[id]=v;return}
+  if(v.del){if(db.some(x=>x.id===id)){db=db.filter(x=>x.id!==id);touched=true;hubDirty=true}delete S.last[id];S.mt[id]=t;return}
+  let c;try{c=JSON.parse(v.d)}catch(e){return}if(!c||c.id!==id)return;
+  if(typeof fix==='function')try{c=fix(c)}catch(e){}
+  const i=db.findIndex(x=>x.id===id);if(i>=0)db[i]=c;else{db.push(c);hubDirty=true}
+  S.last[id]=hsh(JSON.stringify(c));S.mt[id]=t;S.q=S.q.filter(x=>x!==id);touched=true});
+ if(touched){save();lastRaw=raw();sv();if(hubDirty||typeof SYS!=='undefined'&&SYS===null)hubRefresh()}}
+function applyDeferred(){const ids=Object.keys(deferred);if(!ids.length)return;if(typeof cur!=='undefined'&&cur&&ids.includes(cur.id))return;const L=ids.map(id=>({id,v:deferred[id]}));deferred={};L.forEach(x=>{S.mt[x.id]=0});applyRemote(L)}
+async function start(u){U=u;err='';first=true;set('sync');const api=await fb();
+ if(S.uid&&S.uid!==u.uid){S.last={};S.mt={};S.q=[];S.dq=[]}
+ S.uid=u.uid;sv();
+ try{api.putUser(u.uid,{name:u.name,email:u.email,last:now()}).catch(()=>{})}catch(e){}
+ const metaChanged=await pullMeta(api,u.uid).catch(()=>false);
+ if(unsub)try{unsub()}catch(e){}
+ let got=false;
+ unsub=api.watch(u.uid,changes=>{
+  if(!got){got=true;const remote=new Set(changes.map(c=>c.id));applyRemote(changes);
+   // primeira vez: o que só existe aqui sobe para a nuvem
+   let up=0;db.forEach(c=>{if(c&&c.id&&!remote.has(c.id)){S.mt[c.id]=S.mt[c.id]||now();qAdd(c.id);up++}});
+   db.forEach(c=>{if(c&&c.id)S.last[c.id]=hsh(JSON.stringify(c))});
+   lastRaw=raw();sv();first=false;flushSoon(0);
+   if(up&&!S.welcomed){toast(up+(up>1?' fichas deste aparelho foram salvas':' ficha deste aparelho foi salva')+' na sua conta')}
+   if(!S.welcomed){S.welcomed=1;sv()}
+   if(metaChanged){toast('Suas campanhas foram restauradas');setTimeout(()=>location.reload(),900)}
+   return}
+  applyRemote(changes)},e=>{set('err')});
+ paint();hubRefresh()}
+function stop(){U=null;if(unsub)try{unsub()}catch(e){}unsub=null;first=true;set('off');hubRefresh()}
+// ---------- ações ----------
+async function signIn(){err='';set('load');hubRefresh();try{const api=await fb();await api.signIn()}catch(e){const c=e&&e.code||'';err=c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request'?'':c==='auth/unauthorized-domain'?'Este endereço ainda não foi autorizado no Firebase.':c==='auth/network-request-failed'||!c?'Sem conexão com o Google. Confira a internet e tente de novo.':'Não deu para entrar ('+c.replace('auth/','')+').';set('off');hubRefresh()}}
+function modal(title,body,on){const m=document.createElement('div');m.className='gmw';m.id='cldw';m.innerHTML=`<div class="pgw" role="dialog" aria-modal="true"><div class="pgh"><b>${esc(title)}</b><button type="button" data-cw="x" aria-label="Fechar">✕</button></div><div class="gmb">${body}</div></div>`;document.body.append(m);document.body.style.overflow='hidden';
+ const close=()=>{m.remove();document.body.style.overflow=''};
+ m.addEventListener('click',async e=>{if(e.target===m){close();return}const b=e.target.closest('[data-cw]');if(!b)return;if(b.dataset.cw==='x'){close();return}await on(b.dataset.cw,b,close,m)});return m}
+function menu(){if(!U)return;
+ const body=()=>`<div class="cld-acc">${U.photo?`<img src="${esc(U.photo)}" alt="" referrerpolicy="no-referrer">`:''}<div><b>${esc(U.name||'')}</b><span class="mut">${esc(U.email||'')}</span></div></div><p class="mut" style="margin:10px 0 14px">${esc(stTxt())}. As fichas também continuam salvas neste aparelho.</p><button type="button" class="btn" data-cw="sync" style="width:100%">Sincronizar agora</button><button type="button" class="btn" data-cw="out" style="width:100%;margin-top:8px">Sair da conta</button><details class="cld-dz"><summary>Apagar minha conta e meus dados</summary><p class="mut">Apaga da nuvem todas as fichas e campanhas desta conta e exclui o login. As fichas deste aparelho não são apagadas. Não dá para desfazer.</p><button type="button" class="btn cld-del" data-cw="del" style="width:100%">Apagar conta e dados da nuvem</button></details>`;
+ modal('Sua conta',body(),async(a,b,close)=>{
+  if(a==='sync'){S.q=Array.from(new Set(S.q.concat(db.map(c=>c.id))));db.forEach(c=>{S.mt[c.id]=S.mt[c.id]||now()});sv();close();flushSoon(0);toast('Sincronizando…')}
+  else if(a==='out'){close();try{(await fb()).signOut()}catch(e){}toast('Você saiu da conta. As fichas continuam neste aparelho.')}
+  else if(a==='del'){if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Toque de novo para confirmar';return}
+   b.disabled=true;b.textContent='Apagando…';try{const api=await fb(),uid=U.uid;clearTimeout(flushT);S.q=[];S.dq=[];if(unsub)try{unsub()}catch(e){}unsub=null;await api.wipe(uid);await api.delUser();S={last:{},mt:{},q:[],dq:[]};sv();close();toast('Conta e dados da nuvem apagados')}catch(e){b.disabled=false;b.dataset.arm='';b.textContent='Apagar conta e dados da nuvem';toast('Não deu para apagar agora. Tente de novo.')}}})}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest?e.target.closest('[data-cld]'):null;if(!b)return;if(b.dataset.cld==='in')signIn();else if(b.dataset.cld==='menu')menu()});
+// ---------- início ----------
+if(ON()){
+ const boot=()=>fb().then(api=>api.onUser(u=>{if(u)start(u);else stop()})).catch(()=>{if(S.uid){set('offline')}});
+ // só baixa o SDK de cara se a pessoa já entrou antes neste aparelho
+ if(S.uid||window.FC_FBMOCK)boot();
+ const _si=signIn;signIn=async()=>{if(!LP&&!window.FC_FBMOCK){await boot()}return _si()};
+ setInterval(()=>{scan();applyDeferred()},2000);
+ addEventListener('online',()=>{if(U)flushSoon(0)});addEventListener('offline',()=>{if(U)set('offline')});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){scan();if(U)flush()}});
+}
+window.FCCLOUD={state:()=>({U,ST,S,first}),scan,flush};
+})();
+// ===== CONTA E NUVEM (fim) =====
 // ===== CLARISSIMA LUCEAT (início) =====
 ;(function(){
 // (módulo em função própria: os nomes cl* não colidem com os do Tormenta20, que também usa cl* para o Clérigo)
